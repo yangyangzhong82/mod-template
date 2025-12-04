@@ -6,6 +6,7 @@
 
 namespace my_mod {
 ll::io::Logger& logger = Entry::getInstance().getSelf().getLogger();
+Config&         config = ConfigManager::getInstance().get();
 
 Entry& Entry::getInstance() {
     static Entry instance;
