@@ -1,79 +1,44 @@
+name: Release
+
 on:
   release:
-    types:
-      - published
-  
+    types: [published]
+
 jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - uses: xmake-io/github-action-setup-xmake@v1
-        # with:
-        #   xmake-version: branch@master
-
-      - uses: actions/cache@v4
         with:
-          path: |
-            ~/AppData/Local/.xmake
-          key: xmake-${{ hashFiles('xmake.lua') }}
-          restore-keys: |
-            xmake-
+          xmake-version: latest
 
-      - run: |
+      - name: Build
+        run: |
           xmake repo -u
+          xmake f -a x64 -m release -y
+          xmake -y
 
-      - run: |
-          xmake f -a x64 -m release -p windows -y
+      - name: Package
+        run: |
+          xmake pack -y
 
-      - run: |
-          xmake -w -y
+      - name: Calculate SHA256
+        id: sha256
+        shell: pwsh
+        run: |
+          $zip = Get-ChildItem -Path "build/packages/*.zip" | Select-Object -First 1
+          $hash = (Get-FileHash -Path $zip.FullName -Algorithm SHA256).Hash
+          echo "FILENAME=$($zip.Name)" >> $env:GITHUB_OUTPUT
+          echo "SHA256=$hash" >> $env:GITHUB_OUTPUT
 
-      - uses: actions/upload-artifact@v5
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: ${{ github.event.repository.name }}-windows-x64-${{ github.sha }}
-          path: |
-            bin/
-
-  update-release-notes:
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-
-      - id: extract-release-notes
-        uses: ffurrer2/extract-release-notes@v2
-
-      - uses: softprops/action-gh-release@v2
-        with:
+          files: build/packages/*.zip
+          append_body: true
           body: |
-            ${{ steps.extract-release-notes.outputs.release_notes }}
-
-  upload-to-release:
-    needs:
-      - build
-      - update-release-notes
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/download-artifact@v6
-        with:
-          name: ${{ github.event.repository.name }}-windows-x64-${{ github.sha }}
-          path: artifact
-
-      - run: |
-          cp CHANGELOG.md LICENSE README.md artifact/
-
-      - run: |
-          zip -r ../${{ github.event.repository.name }}-windows-x64.zip *
-        working-directory: artifact
-
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            ${{ github.event.repository.name }}-windows-x64.zip
+            
+            ---
+            **SHA256:** `${{ steps.sha256.outputs.SHA256 }}`
