@@ -1,8 +1,9 @@
 #pragma once
-#include "ll/api/io/Logger.h"
+#include "Config/Config.h"
 #include "I18n/I18n.h"
+#include "ll/api/io/Logger.h"
 
-struct Config;
+
 
 namespace my_mod {
 extern ll::io::Logger& logger;
