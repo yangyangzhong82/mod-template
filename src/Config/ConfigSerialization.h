@@ -1,6 +1,6 @@
 #pragma once
 
-#include "config.h"
+#include "Config.h"
 #include "ll/api/io/LogLevel.h"
 #include <nlohmann/json.hpp>
 

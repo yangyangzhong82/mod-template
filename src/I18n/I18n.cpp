@@ -1,5 +1,5 @@
 #include "I18n.h"
-#include "mod/Gloabl.h"
+#include "mod/Global.h"
 #include <filesystem>
 #include <fstream>
 #include <nlohmann/json.hpp>

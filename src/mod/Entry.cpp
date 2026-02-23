@@ -1,8 +1,10 @@
 #include "mod/Entry.h"
 
-#include "ll/api/mod/RegisterHelper.h"
 #include "Config/ConfigManager.h"
+#include "Event/EventRegistrar.h"
 #include "I18n/I18n.h"
+#include "ll/api/mod/RegisterHelper.h"
+#include <filesystem>
 
 namespace my_mod {
 ll::io::Logger& logger = Entry::getInstance().getSelf().getLogger();
@@ -15,10 +17,12 @@ Entry& Entry::getInstance() {
 
 bool Entry::load() {
     getSelf().getLogger().debug("Loading...");
-    
+
     // 先初始化 I18n（使用默认语言）
     auto langPath = getSelf().getLangDir();
-    I18n::getInstance().load(langPath.string(), "zh_CN");
+    if (!I18n::getInstance().load(langPath.string(), "zh_CN")) {
+        logger.warn(tr("i18n.load_partial"));
+    }
 
     auto configPath = getSelf().getConfigDir();
     if (!std::filesystem::exists(configPath)) {
@@ -28,12 +32,12 @@ bool Entry::load() {
     configPath.make_preferred();
 
     if (!ConfigManager::getInstance().load(configPath.string())) {
-        getSelf().getLogger().error(tr("config.save_error", "load failed"));
+        getSelf().getLogger().error(tr("config.load_error"));
         return false;
     }
 
     // 根据配置更新语言
-    I18n::getInstance().setLanguage(ConfigManager::getInstance().get().language);
+    I18n::getInstance().setLanguage(config.language);
 
     logger.info(tr("plugin.loaded"));
     return true;
@@ -41,16 +45,19 @@ bool Entry::load() {
 
 bool Entry::enable() {
     getSelf().getLogger().debug("Enabling...");
+    if (!EventRegistrar::getInstance().registerAll()) {
+        return false;
+    }
+    logger.info(tr("plugin.enabled"));
     return true;
 }
 
 bool Entry::disable() {
     getSelf().getLogger().debug("Disabling...");
+    EventRegistrar::getInstance().unregisterAll();
     logger.info(tr("plugin.unloaded"));
     return true;
 }
-
-
 
 } // namespace my_mod
 

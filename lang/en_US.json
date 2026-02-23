@@ -1,9 +1,11 @@
 {
     "plugin.loaded": "Plugin loaded",
+    "plugin.enabled": "Plugin enabled",
     "plugin.unloaded": "Plugin unloaded",
     "config.loaded": "Config loaded",
     "config.saved": "Config saved",
     "config.not_found": "Config file not found, creating a new one at: {}",
+    "config.load_error": "Failed to load config file.",
     "config.parse_error": "Failed to parse config file: {}. Please check for syntax errors.",
     "config.missing_keys": "Your config file is missing some keys. The plugin will use default values for them.",
     "config.missing_keys_hint": "This won't affect functionality, but you may want to add them to your config.json:",
@@ -12,7 +14,13 @@
     "config.save_error": "Failed to save config file: {}",
     "error.generic": "Error occurred: {}",
     "i18n.lang_dir_not_found": "Language directory not found, created: {}",
+    "i18n.load_partial": "Language files were not fully loaded, fallback to key strings.",
     "i18n.loaded": "Loaded language: {}",
     "i18n.load_error": "Failed to load language file {}: {}",
-    "i18n.lang_not_found": "Language {} not found, using default: {}"
+    "i18n.lang_not_found": "Language {} not found, using default: {}",
+    "event.registered": "Registered event listener: {}",
+    "event.unregistered": "Unregistered event listener: {}",
+    "event.register_failed": "Failed to register event listener: {}",
+    "example.player_join_log": "[Example] Player joined: {}",
+    "example.player_join_welcome": "[Example] Welcome to the server, {}!"
 }

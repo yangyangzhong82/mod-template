@@ -1,9 +1,8 @@
 #include "ConfigManager.h"
 #include "ConfigSerialization.h"
-#include "mod/Gloabl.h"
-#include "config.h"
-#include "mod/Entry.h"
 #include "I18n/I18n.h"
+#include "mod/Entry.h"
+#include "mod/Global.h"
 #include <fstream>
 #include <functional>
 #include <nlohmann/json.hpp>
@@ -63,16 +62,16 @@ bool ConfigManager::load(const std::string& path) {
     find_missing_keys(default_json, user_json, "", missing_keys);
 
     if (!missing_keys.empty()) {
-        auto& logger = Entry::getInstance().getSelf().getLogger();
-        logger.warn(tr("config.missing_keys"));
-        logger.warn(tr("config.missing_keys_hint"));
+        auto& modLogger = Entry::getInstance().getSelf().getLogger();
+        modLogger.warn(tr("config.missing_keys"));
+        modLogger.warn(tr("config.missing_keys_hint"));
         for (const auto& key : missing_keys) {
-            logger.warn(tr("config.missing_key_item", key));
+            modLogger.warn(tr("config.missing_key_item", key));
         }
-        logger.warn(tr("config.regenerate_hint"));
+        modLogger.warn(tr("config.regenerate_hint"));
     }
-    auto& logger = Entry::getInstance().getSelf().getLogger();
-    logger.setLevel(mConfig->logLevel);
+    auto& modLogger = Entry::getInstance().getSelf().getLogger();
+    modLogger.setLevel(mConfig->logLevel);
 
     return true; // 不再保存，以保留用户文件的格式和注释
 }
@@ -95,4 +94,4 @@ Config& ConfigManager::get() { return *mConfig; }
 
 const Config& ConfigManager::get() const { return *mConfig; }
 
-} // namespace CT
+} // namespace my_mod

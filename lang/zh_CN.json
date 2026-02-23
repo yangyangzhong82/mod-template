@@ -1,9 +1,11 @@
 {
     "plugin.loaded": "插件已加载",
+    "plugin.enabled": "插件已启用",
     "plugin.unloaded": "插件已卸载",
     "config.loaded": "配置已加载",
     "config.saved": "配置已保存",
     "config.not_found": "配置文件未找到，正在创建新文件: {}",
+    "config.load_error": "加载配置文件失败。",
     "config.parse_error": "解析配置文件失败: {}。请检查语法错误。",
     "config.missing_keys": "您的配置文件缺少一些键。插件将使用默认值。",
     "config.missing_keys_hint": "这不会影响功能，但您可能需要将它们添加到 config.json:",
@@ -12,7 +14,13 @@
     "config.save_error": "保存配置文件失败: {}",
     "error.generic": "发生错误: {}",
     "i18n.lang_dir_not_found": "语言目录未找到，已创建: {}",
+    "i18n.load_partial": "语言文件未完整加载，将使用键名作为回退文本。",
     "i18n.loaded": "已加载语言: {}",
     "i18n.load_error": "加载语言文件失败 {}: {}",
-    "i18n.lang_not_found": "语言 {} 未找到，使用默认语言: {}"
+    "i18n.lang_not_found": "语言 {} 未找到，使用默认语言: {}",
+    "event.registered": "已注册事件监听: {}",
+    "event.unregistered": "已注销事件监听: {}",
+    "event.register_failed": "注册事件监听失败: {}",
+    "example.player_join_log": "[示例] 玩家加入: {}",
+    "example.player_join_welcome": "[示例] 欢迎来到服务器，{}！"
 }

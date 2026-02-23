@@ -1,26 +1,73 @@
 # LeviLamina Mod Template
 
-Mod Template for LeviLamina
+Reusable LeviLamina C++ template for mod authors.
 
-## Usage
+What this template provides:
 
-For detailed instructions, see the [LeviLamina Documentation](https://lamina.levimc.org/developer_guides/tutorials/create_your_first_mod/)
+- Config bootstrap and default value fallback
+- I18n loader (`lang/*.json`)
+- Event registration skeleton
+- Standard `load/enable/disable` lifecycle
 
-1. Generate a new repository from this template
-2. Clone the new repository
-3. Change the mod name and the expected LeviLamina version in `xmake.lua`
-4. Add your code.
-5. Run `xmake f -y -p windows -a x64 -m release` in the root of the repository
-6. Run `xmake` to build the mod.
+## Quick Start
 
-After a successful build, you will find mod in `bin/`
+1. Create a repository from this template and clone it.
+2. Initialize placeholders with the helper script:
 
-## Contributing
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\init-template.ps1 `
+  -ModName "my-awesome-mod" `
+  -Tooth "github.com/your-org/my-awesome-mod"
+```
 
-Ask questions by creating an issue.
+3. Update LeviLamina version in `xmake.lua` if needed.
+4. Build:
 
-PRs accepted.
+```powershell
+xmake f -y -p windows -a x64 -m release --target_type=server
+xmake
+```
+
+Build output is generated under `bin/`.
+
+`init-template.ps1` options:
+
+- `-Namespace`: custom C++ namespace (default from `-ModName`)
+- `-DisplayName`: mod display name (default from `-ModName`)
+- `-Description`: `tooth.json` description text
+- `-DryRun`: preview replacements without writing files
+
+## Project Structure
+
+- `src/mod/Entry.cpp`: lifecycle entrypoint
+- `src/Event/EventRegistrar.cpp`: event register/unregister example
+- `src/Config/Config.h`: config schema
+- `src/Config/ConfigManager.cpp`: config load/save
+- `src/I18n/I18n.cpp`: i18n load/lookup
+- `lang/zh_CN.json` / `lang/en_US.json`: translations
+
+## Default Config
+
+On first run, `config/config.json` is auto-generated.
+
+- `version`: config version
+- `logLevel`: logger level
+- `language`: active locale, e.g. `en_US`, `zh_CN`
+- `exampleJoinMessageEnable`: example join message switch (default `false`)
+- `exampleJoinLogEnable`: example join log switch (default `false`)
+
+## Extend This Template
+
+1. Add your listeners under `src/Event`.
+2. Keep registration centralized in `EventRegistrar`.
+3. Add config fields in `src/Config/Config.h`.
+4. Add translation keys in `lang/*.json`.
+5. Wire your modules in `Entry::enable()`.
+
+## References
+
+- LeviLamina docs: https://lamina.levimc.org/developer_guides/tutorials/create_your_first_mod/
 
 ## License
 
-CC0-1.0 © LeviMC(LiteLDev)
+CC0-1.0 © LeviMC (LiteLDev)
