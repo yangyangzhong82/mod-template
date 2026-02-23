@@ -23,3 +23,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `ConfigManager` logger shadowing warnings and namespace comment.
 - Normalize `Config` header include usage (`Config.h`).
 - Make example behavior opt-in by default for template neutrality.
+- Auto-append missing top-level config keys in `config.json` while preserving existing comments and key order.

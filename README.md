@@ -49,6 +49,7 @@ Build output is generated under `bin/`.
 ## Default Config
 
 On first run, `config/config.json` is auto-generated.
+When new top-level fields are added in code, missing keys are appended automatically while preserving existing comments and current key order.
 
 - `version`: config version
 - `logLevel`: logger level

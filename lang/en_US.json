@@ -11,6 +11,8 @@
     "config.missing_keys_hint": "This won't affect functionality, but you may want to add them to your config.json:",
     "config.missing_key_item": "- {}",
     "config.regenerate_hint": "You can also delete your config.json to generate a new one with all keys on next startup.",
+    "config.updated_missing_keys": "Auto-inserted {} missing config key(s) while preserving existing comments and key order.",
+    "config.update_missing_keys_failed": "Failed to auto-insert missing config keys. Please check config.json manually.",
     "config.save_error": "Failed to save config file: {}",
     "error.generic": "Error occurred: {}",
     "i18n.lang_dir_not_found": "Language directory not found, created: {}",

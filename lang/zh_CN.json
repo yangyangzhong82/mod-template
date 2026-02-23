@@ -11,6 +11,8 @@
     "config.missing_keys_hint": "这不会影响功能，但您可能需要将它们添加到 config.json:",
     "config.missing_key_item": "- {}",
     "config.regenerate_hint": "您也可以删除 config.json，在下次启动时生成包含所有键的新文件。",
+    "config.updated_missing_keys": "已自动补齐 {} 个缺失配置项，并保留原有注释与已有项顺序。",
+    "config.update_missing_keys_failed": "自动补齐缺失配置项失败，请手动检查 config.json。",
     "config.save_error": "保存配置文件失败: {}",
     "error.generic": "发生错误: {}",
     "i18n.lang_dir_not_found": "语言目录未找到，已创建: {}",
