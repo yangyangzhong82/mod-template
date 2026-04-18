@@ -1,7 +1,6 @@
 #include "mod/Entry.h"
 
 #include "Config/ConfigManager.h"
-#include "Event/EventRegistrar.h"
 #include "I18n/I18n.h"
 #include "ll/api/mod/RegisterHelper.h"
 #include <filesystem>
@@ -45,20 +44,22 @@ bool Entry::load() {
 
 bool Entry::enable() {
     getSelf().getLogger().debug("Enabling...");
-    if (!EventRegistrar::getInstance().registerAll()) {
-        return false;
-    }
+
     logger.info(tr("plugin.enabled"));
     return true;
 }
 
 bool Entry::disable() {
     getSelf().getLogger().debug("Disabling...");
-    EventRegistrar::getInstance().unregisterAll();
     logger.info(tr("plugin.unloaded"));
     return true;
 }
 
-} // namespace my_mod
+bool Entry::unload() {
+    getSelf().getLogger().debug("Unloading...");
+    return true;
+
+} 
 
 LL_REGISTER_MOD(my_mod::Entry, my_mod::Entry::getInstance());
+}
