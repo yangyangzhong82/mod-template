@@ -1,5 +1,12 @@
 #pragma once
 
+// clang-cl defines _MSC_VER, which makes Boost.PFR 2.1 select the MSVC field-name parser.
+#if defined(__clang__) && defined(_MSC_VER)
+#define BOOST_PFR_FUNCTION_SIGNATURE __PRETTY_FUNCTION__
+#define BOOST_PFR_CORE_NAME_PARSING                                                                                   \
+    (sizeof("auto boost::pfr::detail::name_of_field_impl() [MsvcWorkaround = ") - 1, sizeof("}]") - 1, backward("."))
+#endif
+
 #include "Config.h"
 #include "ll/api/io/LogLevel.h"
 #include <nlohmann/json.hpp>

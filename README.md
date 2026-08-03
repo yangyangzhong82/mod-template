@@ -24,9 +24,11 @@ powershell -ExecutionPolicy Bypass -File .\scripts\init-template.ps1 `
 4. Build:
 
 ```powershell
-xmake f -y -p windows -a x64 -m release --target_type=server
+xmake f -y -p windows -a x64 -m release --toolchain=clang-cl --target_type=server
 xmake
 ```
+
+The Windows build uses Clang in MSVC-compatible mode (`clang-cl`) and requires LLVM to be installed.
 
 Build output is generated under `bin/`.
 
