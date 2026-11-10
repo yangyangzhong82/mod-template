@@ -6,10 +6,7 @@
   "info": {
     "name": "My Mod",
     "description": "Description of my mod",
-    "tags": [
-      "platform:levilamina",
-      "type:mod"
-    ],
+    "tags": ["platform:levilamina", "type:mod"],
     "avatar_url": "https://example.com/my-mod/avatar.png"
   },
   "variants": [
@@ -17,7 +14,7 @@
       "label": "",
       "platform": "win-x64",
       "dependencies": {
-        "github.com/LiteLDev/LeviLamina": "1.8.*"
+        "github.com/LiteLDev/LeviLamina": "26.60.*"
       },
       "assets": [
         {
@@ -29,7 +26,7 @@
             {
               "type": "dir",
               "src": "my-mod/",
-              "dest": "plugins/my-mod/"
+              "dest": "mods/my-mod/"
             }
           ]
         }
@@ -51,7 +48,7 @@
       "label": "client",
       "platform": "win-x64",
       "dependencies": {
-        "github.com/LiteLDev/LeviLamina#client": "1.8.*"
+        "github.com/LiteLDev/LeviLamina#client": "26.60.*"
       },
       "assets": [
         {

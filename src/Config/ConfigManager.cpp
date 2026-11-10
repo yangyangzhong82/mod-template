@@ -21,12 +21,7 @@ struct RootObjectRange {
 };
 
 std::optional<RootObjectRange> findRootObjectRange(std::string_view text) {
-    enum class ParseState {
-        Normal,
-        String,
-        LineComment,
-        BlockComment
-    };
+    enum class ParseState { Normal, String, LineComment, BlockComment };
 
     ParseState state   = ParseState::Normal;
     bool       escaped = false;
@@ -40,7 +35,7 @@ std::optional<RootObjectRange> findRootObjectRange(std::string_view text) {
         switch (state) {
         case ParseState::Normal:
             if (ch == '"') {
-                state = ParseState::String;
+                state   = ParseState::String;
                 escaped = false;
                 continue;
             }
@@ -115,8 +110,8 @@ std::string detectIndent(std::string_view text, size_t openBracePos, size_t clos
             lineEnd = closeBracePos;
         }
 
-        auto line = text.substr(lineStart, lineEnd - lineStart);
-        size_t i  = 0;
+        auto   line = text.substr(lineStart, lineEnd - lineStart);
+        size_t i    = 0;
         while (i < line.size() && (line[i] == ' ' || line[i] == '\t')) {
             ++i;
         }
@@ -133,9 +128,9 @@ std::string detectIndent(std::string_view text, size_t openBracePos, size_t clos
 }
 
 bool appendMissingTopLevelKeysPreserveComments(
-    std::string const&                                   path,
+    std::string const&                                  path,
     std::vector<std::pair<std::string, nlohmann::json>> missingEntries,
-    bool                                                 hasExistingMembers
+    bool                                                hasExistingMembers
 ) {
     if (missingEntries.empty()) {
         return true;
@@ -165,12 +160,12 @@ bool appendMissingTopLevelKeysPreserveComments(
     }
 
     for (size_t i = 0; i < missingEntries.size(); ++i) {
-        auto& [key, value] = missingEntries[i];
-        patch += indent;
-        patch += "\"";
-        patch += key;
-        patch += "\": ";
-        patch += value.dump();
+        auto& [key, value]  = missingEntries[i];
+        patch              += indent;
+        patch              += "\"";
+        patch              += key;
+        patch              += "\": ";
+        patch              += value.dump();
         if (i + 1 < missingEntries.size()) {
             patch += ",";
         }
@@ -267,7 +262,7 @@ bool ConfigManager::load(const std::string& path) {
     auto& modLogger = Entry::getInstance().getSelf().getLogger();
     modLogger.setLevel(mConfig->logLevel);
 
-    return true; // 不再保存，以保留用户文件的格式和注释
+    return true;
 }
 
 bool ConfigManager::save() {
@@ -281,7 +276,6 @@ bool ConfigManager::save() {
     }
     return true;
 }
-
 
 
 Config& ConfigManager::get() { return *mConfig; }

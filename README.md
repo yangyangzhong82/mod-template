@@ -69,7 +69,7 @@ When new top-level fields are added in code, missing keys are appended automatic
 
 ## References
 
-- LeviLamina docs: https://lamina.levimc.org/developer_guides/tutorials/create_your_first_mod/
+For detailed instructions, see the [LeviLamina Documentation](https://docs.levimc.org/LeviLamina/developer_guides/tutorials/create_your_first_mod/)
 
 ## License
 

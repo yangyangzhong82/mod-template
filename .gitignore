@@ -561,3 +561,4 @@ fabric.properties
 
 # AI
 /.claude/
+/.kilo/

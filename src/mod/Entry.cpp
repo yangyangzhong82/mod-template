@@ -16,8 +16,6 @@ Entry& Entry::getInstance() {
 
 bool Entry::load() {
     getSelf().getLogger().debug("Loading...");
-
-    // 先初始化 I18n（使用默认语言）
     auto langPath = getSelf().getLangDir();
     if (!I18n::getInstance().load(langPath.string(), "zh_CN")) {
         logger.warn(tr("i18n.load_partial"));
@@ -34,8 +32,6 @@ bool Entry::load() {
         getSelf().getLogger().error(tr("config.load_error"));
         return false;
     }
-
-    // 根据配置更新语言
     I18n::getInstance().setLanguage(config.language);
 
     logger.info(tr("plugin.loaded"));
@@ -58,8 +54,7 @@ bool Entry::disable() {
 bool Entry::unload() {
     getSelf().getLogger().debug("Unloading...");
     return true;
-
-} 
+}
 
 LL_REGISTER_MOD(my_mod::Entry, my_mod::Entry::getInstance());
-}
+} // namespace my_mod
