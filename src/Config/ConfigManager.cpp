@@ -1,13 +1,18 @@
 #include "ConfigManager.h"
 #include "ConfigSerialization.h"
 #include "I18n/I18n.h"
-#include "mod/Entry.h"
 #include "mod/Global.h"
+#include <Windows.h>
+#include <exception>
+#include <filesystem>
+#include <fmt/std.h>
 #include <fstream>
 #include <functional>
 #include <nlohmann/json.hpp>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <system_error>
 #include <utility>
 #include <vector>
 
@@ -128,7 +133,7 @@ std::string detectIndent(std::string_view text, size_t openBracePos, size_t clos
 }
 
 bool appendMissingTopLevelKeysPreserveComments(
-    std::string const&                                  path,
+    std::filesystem::path const&                        path,
     std::vector<std::pair<std::string, nlohmann::json>> missingEntries,
     bool                                                hasExistingMembers
 ) {
@@ -193,13 +198,17 @@ ConfigManager::ConfigManager() : mConfig(std::make_unique<Config>()) {}
 
 ConfigManager::~ConfigManager() = default;
 
-bool ConfigManager::load(const std::string& path) {
+bool ConfigManager::load(const std::filesystem::path& path) {
     mConfigPath = path;
     std::ifstream file(path);
     if (!file.is_open()) {
         // 文件不存在，创建默认配置
         logger.info(tr("config.not_found", path));
-        return save();
+        if (!save()) {
+            return false;
+        }
+        logger.setLevel(mConfig->logLevel);
+        return true;
     }
 
     std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
@@ -236,13 +245,12 @@ bool ConfigManager::load(const std::string& path) {
     find_missing_keys(default_json, user_json, "", missing_keys);
 
     if (!missing_keys.empty()) {
-        auto& modLogger = Entry::getInstance().getSelf().getLogger();
-        modLogger.warn(tr("config.missing_keys"));
-        modLogger.warn(tr("config.missing_keys_hint"));
+        logger.warn(tr("config.missing_keys"));
+        logger.warn(tr("config.missing_keys_hint"));
         for (const auto& key : missing_keys) {
-            modLogger.warn(tr("config.missing_key_item", key));
+            logger.warn(tr("config.missing_key_item", key));
         }
-        modLogger.warn(tr("config.regenerate_hint"));
+        logger.warn(tr("config.regenerate_hint"));
 
         // 仅补齐顶层缺失键，按文本补丁方式写回，保留原注释和已有项顺序。
         std::vector<std::pair<std::string, nlohmann::json>> missing_top_level_entries;
@@ -253,25 +261,35 @@ bool ConfigManager::load(const std::string& path) {
         }
         if (!missing_top_level_entries.empty()) {
             if (appendMissingTopLevelKeysPreserveComments(path, missing_top_level_entries, !user_json.empty())) {
-                modLogger.info(tr("config.updated_missing_keys", missing_top_level_entries.size()));
+                logger.info(tr("config.updated_missing_keys", missing_top_level_entries.size()));
             } else {
-                modLogger.warn(tr("config.update_missing_keys_failed"));
+                logger.warn(tr("config.update_missing_keys_failed"));
             }
         }
     }
-    auto& modLogger = Entry::getInstance().getSelf().getLogger();
-    modLogger.setLevel(mConfig->logLevel);
+    logger.setLevel(mConfig->logLevel);
 
     return true;
 }
 
 bool ConfigManager::save() {
     try {
-        nlohmann::json json = *mConfig;
-        std::ofstream  file(mConfigPath);
-        file << json.dump(4);
-    } catch (const nlohmann::json::exception& e) {
-        Entry::getInstance().getSelf().getLogger().error(tr("config.save_error", e.what()));
+        const std::string content = nlohmann::json(*mConfig).dump(4);
+        auto              tempPath = mConfigPath;
+        tempPath += ".tmp";
+
+        std::ofstream file;
+        file.exceptions(std::ios::failbit | std::ios::badbit);
+        file.open(tempPath, std::ios::binary | std::ios::trunc);
+        file.write(content.data(), static_cast<std::streamsize>(content.size()));
+        file.close();
+
+        // 临时文件写入成功后再替换原配置，支持覆盖已有文件。
+        if (!MoveFileExW(tempPath.c_str(), mConfigPath.c_str(), MOVEFILE_REPLACE_EXISTING)) {
+            throw std::system_error(static_cast<int>(GetLastError()), std::system_category(), "replace config");
+        }
+    } catch (const std::exception& e) {
+        logger.error(tr("config.save_error", e.what()));
         return false;
     }
     return true;

@@ -1,8 +1,10 @@
 #include "I18n.h"
 #include "mod/Global.h"
 #include <filesystem>
+#include <fmt/std.h>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <vector>
 
 namespace my_mod {
 
@@ -11,30 +13,32 @@ I18n& I18n::getInstance() {
     return instance;
 }
 
-bool I18n::load(const std::string& langDir, const std::string& defaultLang) {
+bool I18n::load(const std::filesystem::path& langDir, const std::string& defaultLang) {
     mDefaultLang = defaultLang;
     mCurrentLang = defaultLang;
 
     namespace fs = std::filesystem;
     if (!fs::exists(langDir)) {
         fs::create_directories(langDir);
-        logger.warn(get("i18n.lang_dir_not_found", langDir));
         return false;
     }
 
-    bool loaded = false;
+    std::vector<std::string> loadedLanguages;
     for (const auto& entry : fs::directory_iterator(langDir)) {
         if (entry.path().extension() == ".json") {
-            std::string lang = entry.path().stem().string();
-            if (loadLanguageFile(entry.path().string(), lang)) {
-                loaded = true;
+            std::string lang = fmt::format("{}", entry.path().stem());
+            if (loadLanguageFile(entry.path(), lang)) {
+                loadedLanguages.push_back(lang);
             }
         }
     }
-    return loaded;
+    for (const auto& lang : loadedLanguages) {
+        logger.info(get("i18n.loaded", lang));
+    }
+    return !loadedLanguages.empty();
 }
 
-bool I18n::loadLanguageFile(const std::string& path, const std::string& lang) {
+bool I18n::loadLanguageFile(const std::filesystem::path& path, const std::string& lang) {
     std::ifstream file(path);
     if (!file.is_open()) return false;
 
@@ -47,7 +51,6 @@ bool I18n::loadLanguageFile(const std::string& path, const std::string& lang) {
                 mTranslations[lang][key] = value.get<std::string>();
             }
         }
-        logger.info(get("i18n.loaded", lang));
         return true;
     } catch (const std::exception& e) {
         logger.error(get("i18n.load_error", path, e.what()));
@@ -66,7 +69,7 @@ void I18n::setLanguage(const std::string& lang) {
 
 const std::string& I18n::getLanguage() const { return mCurrentLang; }
 
-const std::string& I18n::get(const std::string& key) const {
+std::string_view I18n::get(std::string_view key) const {
 
     if (auto langIt = mTranslations.find(mCurrentLang); langIt != mTranslations.end()) {
         if (auto keyIt = langIt->second.find(key); keyIt != langIt->second.end()) {

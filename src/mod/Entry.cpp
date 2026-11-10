@@ -17,37 +17,43 @@ Entry& Entry::getInstance() {
 bool Entry::load() {
     getSelf().getLogger().debug("Loading...");
     auto langPath = getSelf().getLangDir();
-    if (!I18n::getInstance().load(langPath.string(), "zh_CN")) {
-        logger.warn(tr("i18n.load_partial"));
+    if (!I18n::getInstance().load(langPath, "zh_CN")) {
+        logger.warn("语言文件未加载，将使用键名作为回退文本。");
     }
 
     auto configPath = getSelf().getConfigDir();
     if (!std::filesystem::exists(configPath)) {
         std::filesystem::create_directories(configPath);
     }
-    configPath /= "config.json";
+    configPath /= "config.jsonc";
     configPath.make_preferred();
 
-    if (!ConfigManager::getInstance().load(configPath.string())) {
+    // 首次启动使用随模组发布的推荐配置，保留作者填写的注释。
+    const auto defaultConfigPath = getSelf().getModDir() / "config.jsonc";
+    if (!std::filesystem::exists(configPath) && std::filesystem::exists(defaultConfigPath)) {
+        std::filesystem::copy_file(defaultConfigPath, configPath);
+    }
+
+    if (!ConfigManager::getInstance().load(configPath)) {
         getSelf().getLogger().error(tr("config.load_error"));
         return false;
     }
     I18n::getInstance().setLanguage(config.language);
 
-    logger.info(tr("plugin.loaded"));
+    logger.info(tr("mod.loaded"));
     return true;
 }
 
 bool Entry::enable() {
     getSelf().getLogger().debug("Enabling...");
 
-    logger.info(tr("plugin.enabled"));
+    logger.info(tr("mod.enabled"));
     return true;
 }
 
 bool Entry::disable() {
     getSelf().getLogger().debug("Disabling...");
-    logger.info(tr("plugin.unloaded"));
+    logger.info(tr("mod.unloaded"));
     return true;
 }
 

@@ -63,10 +63,15 @@ target("my-mod")
     --  add_files("src-client/**.cpp")
     end
     after_build(function (target)
+        local output_dir = path.join(os.projectdir(), "bin", target:name())
+        os.mkdir(output_dir)
+        os.cp(path.join(os.projectdir(), "config.jsonc"), path.join(output_dir, "config.jsonc"))
+
         local lang_src = path.join(os.projectdir(), "lang")
-        local lang_dst = path.join(os.projectdir(), "bin", target:name())
+        local lang_dst = path.join(output_dir, "lang")
         if os.isdir(lang_src) then
-            os.cp(lang_src, lang_dst)
+            os.mkdir(lang_dst)
+            os.cp(path.join(lang_src, "*"), lang_dst)
             print("Copied lang folder to " .. lang_dst)
         end
     end)
