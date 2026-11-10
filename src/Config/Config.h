@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Reflectable.h"
 #include "ll/api/io/LogLevel.h"
 #include <string>
 
@@ -10,5 +11,8 @@ struct Config {
     ll::io::LogLevel logLevel                 = ll::io::LogLevel::Info;
     std::string      language                 = "en_US";
 };
+
+template <>
+struct is_reflectable<Config> : std::true_type {};
 
 } // namespace my_mod

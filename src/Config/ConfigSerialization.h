@@ -1,14 +1,15 @@
 #pragma once
 
 // clang-cl defines _MSC_VER, which makes Boost.PFR 2.1 select the MSVC field-name parser.
+// This override targets Boost.PFR 2.1's internal name_of_field_impl signature.
+// Recheck the signature prefix/suffix when upgrading Boost.PFR or clang-cl.
 #if defined(__clang__) && defined(_MSC_VER)
 #define BOOST_PFR_FUNCTION_SIGNATURE __PRETTY_FUNCTION__
 #define BOOST_PFR_CORE_NAME_PARSING                                                                                   \
     (sizeof("auto boost::pfr::detail::name_of_field_impl() [MsvcWorkaround = ") - 1, sizeof("}]") - 1, backward("."))
 #endif
 
-#include "Config.h"
-#include "ll/api/io/LogLevel.h"
+#include "Reflectable.h"
 #include <nlohmann/json.hpp>
 
 #include <boost/pfr.hpp>
@@ -19,9 +20,9 @@
 
 namespace nlohmann {
 
-// 通用序列化模板，适用于所有聚合类型 (C++17 或更高版本)
+// 仅适用于通过 my_mod::is_reflectable 显式启用的聚合类型。
 template <typename T>
-    requires std::is_aggregate_v<T>
+    requires(my_mod::is_reflectable<T>::value && std::is_aggregate_v<T>)
 struct adl_serializer<T> {
     /**
      * @brief 将聚合类型 T 序列化为 JSON 对象。
